@@ -8,11 +8,11 @@ import type {
   IUIJSONData,
 } from '@leafer-ui/interface'
 import type { IStagger } from '../types/stagger'
-import { isObject } from '@antfu/utils'
 import {
   boundsType,
   dataProcessor,
   Debug,
+  isObject,
   Platform,
   Plugin,
   Rect,
