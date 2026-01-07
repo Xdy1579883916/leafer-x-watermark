@@ -1,0 +1,20 @@
+{
+  "name": "@lx/watermark",
+  "type": "module",
+  "version": "0.0.0",
+  "description": "",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "typesVersions": {
+    "*": {
+      "*": [
+        "./src/*"
+      ]
+    }
+  },
+  "devDependencies": {
+    "@leafer-ui/core": "^1.11.2",
+    "@leafer-ui/interface": "^1.11.2"
+  }
+}

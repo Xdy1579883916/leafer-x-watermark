@@ -1,0 +1,26 @@
+{
+  "name": "playground",
+  "type": "module",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "vite --host",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.5.24"
+  },
+  "devDependencies": {
+    "@leafer-in/editor": "^1.11.2",
+    "@leafer-in/export": "^1.11.2",
+    "@leafer-in/view": "^1.11.2",
+    "@leafer-in/viewport": "^1.11.2",
+    "@lx/watermark": "workspace:*",
+    "@tsconfig/node22": "^22.0.2",
+    "@types/node": "^24.3.1",
+    "@vitejs/plugin-vue": "^6.0.1",
+    "leafer-ui": "^1.11.2",
+    "naive-ui": "^2.43.1"
+  }
+}

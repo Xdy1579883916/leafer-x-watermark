@@ -1,0 +1,70 @@
+{
+  "name": "leafer-x-watermark",
+  "type": "module",
+  "version": "1.0.0",
+  "packageManager": "pnpm@10.14.0",
+  "description": "Leafer 水印插件",
+  "author": "XiaDeYu <1579883916@qq.com>",
+  "license": "MIT",
+  "homepage": "https://github.com/Xdy1579883916/leafer-x-watermark#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Xdy1579883916/leafer-x-watermark.git"
+  },
+  "bugs": "https://github.com/Xdy1579883916/leafer-x-watermark/issues",
+  "keywords": [
+    "leafer",
+    "水印",
+    "插件"
+  ],
+  "sideEffects": false,
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./package.json": "./package.json"
+  },
+  "main": "./dist/index.mjs",
+  "module": "./dist/index.mjs",
+  "types": "./dist/index.d.mts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "unbuild",
+    "dev": "pnpm run -C playground dev",
+    "doc": "pnpm run -C playground build",
+    "lint": "eslint",
+    "prepublishOnly": "nr build",
+    "release": "bumpp && npm publish",
+    "test": "vitest",
+    "prepare": "simple-git-hooks"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "devDependencies": {
+    "@antfu/eslint-config": "^5.4.1",
+    "@antfu/ni": "^25.0.0",
+    "@antfu/utils": "^9.3.0",
+    "@lx/watermark": "workspace:*",
+    "@types/node": "^24.10.4",
+    "bumpp": "^10.3.2",
+    "eslint": "^9.39.2",
+    "lint-staged": "^16.2.7",
+    "simple-git-hooks": "^2.13.1",
+    "tinyexec": "^1.0.2",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "unbuild": "^3.6.1",
+    "vite": "^7.3.0",
+    "vitest": "^3.2.4",
+    "vitest-package-exports": "^0.1.1",
+    "yaml": "^2.8.2"
+  },
+  "simple-git-hooks": {
+    "pre-commit": "pnpm i --frozen-lockfile --ignore-scripts --offline && npx lint-staged"
+  },
+  "lint-staged": {
+    "*": "eslint --fix"
+  }
+}
