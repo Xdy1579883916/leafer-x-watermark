@@ -45,8 +45,8 @@ export interface IProcessDataType extends IRectData {
   _tileContent?: string
   _tileMode?: boolean
   _tileSize?: number
-  _tileGap?: number
-  _tileStagger?: number
+  _tileGap?: number | ITileGap
+  _tileStagger?: IStagger
   _tileRotation?: number
 }
 
