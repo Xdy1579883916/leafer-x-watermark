@@ -5,7 +5,6 @@ import type {
   IRectData,
   IRectInputData,
   IUI,
-  IUIJSONData,
 } from '@leafer-ui/interface'
 import type { IStagger } from '../types/stagger'
 import {
@@ -60,7 +59,7 @@ export interface IWatermarkInputData extends IWatermarkAttrData, IRectInputData 
 
 // ==================== Data Class ====================
 export class ProcessorData extends RectData implements IProcessDataType {
-  __leaf: Watermark
+  declare public __leaf: Watermark
 
   _tileContent?: string
 
@@ -106,15 +105,13 @@ export class ProcessorData extends RectData implements IProcessDataType {
 
   public __getData(): IObject {
     const data: IImageInputData = super.__getData()
-    if (data.url)
-      delete data.fill
+    delete data.fill
     return data
   }
 
   public __getInputData(names?: string[] | IObject, options?: IJSONOptions): IObject {
     const data: IImageInputData = super.__getInputData(names, options)
-    if (data.url)
-      delete data.fill
+    delete data.fill
     return data
   }
 }
@@ -261,13 +258,6 @@ export class Watermark<TConstructorData = IWatermarkInputData> extends Rect<TCon
         }
       }
     })
-  }
-
-  toJSON(options?: IJSONOptions): IUIJSONData {
-    const data = super.toJSON(options)
-    // 删除不想序列化的属性
-    const { fill, ...cleanData } = data
-    return cleanData
   }
 }
 
