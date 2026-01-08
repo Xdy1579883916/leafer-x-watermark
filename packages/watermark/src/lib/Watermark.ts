@@ -6,13 +6,13 @@ import type {
   IRectInputData,
   IUI,
 } from '@leafer-ui/interface'
+
 import type { IStagger } from '../types/stagger'
 import {
   boundsType,
   dataProcessor,
   Debug,
   isObject,
-  Platform,
   Plugin,
   Rect,
   RectData,
@@ -20,7 +20,6 @@ import {
   UICreator,
 } from '@leafer-ui/core'
 import { installStaggerPattern } from '../stagger'
-import '../types/stagger'
 
 installStaggerPattern()
 
@@ -48,6 +47,11 @@ export interface IProcessDataType extends IRectData {
   _tileGap?: number | ITileGap
   _tileStagger?: IStagger
   _tileRotation?: number
+  _cachedUrl?: string
+  _cachedBounds?: { width: number, height: number }
+
+  updateFill: () => void
+  regenerateImage: () => Promise<void>
 }
 
 export interface IWatermark extends IWatermarkAttrData, IUI {
@@ -61,46 +65,94 @@ export interface IWatermarkInputData extends IWatermarkAttrData, IRectInputData 
 export class ProcessorData extends RectData implements IProcessDataType {
   declare public __leaf: Watermark
 
-  _tileContent?: string
+  _tileContent?: string = ''
+  _cachedUrl?: string
+  _cachedBounds?: { width: number, height: number }
 
   setTileContent(value: string) {
     this._tileContent = value
-    this.__leaf.regenerateImage()
+    return this.regenerateImage()
   }
 
-  _tileMode?: boolean
+  _tileMode?: boolean = true
 
   setTileMode(value: boolean) {
     this._tileMode = value
-    this.__leaf.updateFill()
+    this.updateFill()
   }
 
-  _tileSize?: number
+  _tileSize?: number = 100
 
   setTileSize(value: number) {
     this._tileSize = value
-    this.__leaf.updateFill()
+    this.updateFill()
   }
 
-  _tileGap?: number
+  _tileGap?: number | ITileGap = 0
 
   setTileGap(value: number) {
     this._tileGap = value
-    this.__leaf.updateFill()
+    this.updateFill()
   }
 
-  _tileStagger?: number
+  _tileStagger?: IStagger = 0
 
   setTileStagger(value: number) {
     this._tileStagger = value
-    this.__leaf.updateFill()
+    this.updateFill()
   }
 
-  _tileRotation?: number
+  _tileRotation?: number = 0
 
   setTileRotation(value: number) {
     this._tileRotation = value
-    this.__leaf.updateFill()
+    this.updateFill()
+  }
+
+  public updateFill() {
+    const leaf = this.__leaf
+    const { _tileMode, _tileSize, _tileGap, _tileStagger, _tileRotation } = this
+
+    if (!this._cachedUrl || !this._cachedBounds || _tileSize <= 0) {
+      leaf.fill = undefined
+      return
+    }
+    const { width: boundsWidth, height: boundsHeight } = this._cachedBounds
+
+    if (!_tileMode) {
+      leaf.fill = {
+        type: 'image',
+        url: this._cachedUrl,
+        mode: 'stretch',
+      }
+    }
+    else {
+      const scale = _tileSize / 100
+      const sizeWidth = boundsWidth * scale
+      const sizeHeight = boundsHeight * scale
+      let xGap: number, yGap: number
+      if (isObject(_tileGap)) {
+        xGap = _tileGap.x
+        yGap = _tileGap.y
+      }
+      else {
+        xGap = yGap = _tileGap as number
+      }
+
+      const gapX = (xGap / 100) * sizeWidth
+      const gapY = (yGap / 100) * sizeHeight
+
+      leaf.fill = {
+        type: 'image',
+        url: this._cachedUrl,
+        mode: 'repeat',
+        gap: { x: gapX, y: gapY },
+        size: { width: sizeWidth, height: sizeHeight },
+        stagger: _tileStagger,
+        rotation: _tileRotation,
+        align: 'center',
+      }
+    }
   }
 
   public __getData(): IObject {
@@ -113,6 +165,54 @@ export class ProcessorData extends RectData implements IProcessDataType {
     const data: IImageInputData = super.__getInputData(names, options)
     delete data.fill
     return data
+  }
+
+  private createTileItem(itemData: object): IUI {
+    return UICreator.get('Group', {
+      children: [itemData],
+      around: 'center',
+    }) as IUI
+  }
+
+  public async regenerateImage() {
+    const leaf = this.__leaf
+    const { _tileContent } = this
+    const { width, height } = leaf
+
+    if (!_tileContent) {
+      this._cachedUrl = undefined
+      this._cachedBounds = undefined
+      leaf.fill = undefined
+      return
+    }
+
+    let itemData: object
+    try {
+      itemData = JSON.parse(_tileContent)
+    }
+    catch (e) {
+      debug.error('Invalid tileContent JSON:', e)
+      return
+    }
+
+    const tempItem = this.createTileItem(itemData)
+    const bounds = tempItem.getBounds('box', 'local')
+
+    if (!width || !height) {
+      leaf.width = bounds.width
+      leaf.height = bounds.height
+    }
+
+    const exportWidth = 1000
+
+    const { data: url } = await tempItem.export('png', {
+      blob: false,
+      size: { width: exportWidth },
+    })
+    this._cachedUrl = url as string
+    this._cachedBounds = { width: bounds.width, height: bounds.height }
+    tempItem.destroy()
+    this.updateFill()
   }
 }
 
@@ -153,111 +253,12 @@ export class Watermark<TConstructorData = IWatermarkInputData> extends Rect<TCon
   @boundsType(0)
   declare height: number
 
-  // 缓存导出的图片和尺寸信息
-  private _cachedUrl?: string
-  private _cachedBounds?: { width: number, height: number }
+  public get tileURL() {
+    return this.__._cachedUrl
+  }
 
   constructor(data?: TConstructorData) {
     super(data)
-    this.regenerateImage()
-  }
-
-  private createTileItem(itemData: object): IUI {
-    return UICreator.get('Group', {
-      children: [itemData],
-      // rotation: this.tileRotation,
-      around: 'center',
-    }) as IUI
-  }
-
-  public regenerateImage() {
-    Platform.requestRender(async () => {
-      const { tileContent, width, height } = this
-
-      if (!tileContent) {
-        this._cachedUrl = undefined
-        this._cachedBounds = undefined
-        this.fill = undefined
-        return
-      }
-
-      let itemData: object
-      try {
-        itemData = JSON.parse(tileContent)
-      }
-      catch (e) {
-        debug.error('Invalid tileContent JSON:', e)
-        return
-      }
-
-      const tempItem = this.createTileItem(itemData)
-      const bounds = tempItem.getBounds('box', 'local')
-
-      if (!width || !height) {
-        this.width = bounds.width
-        this.height = bounds.height
-      }
-
-      const exportWidth = 1000
-      const { data: url } = await tempItem.export('png', {
-        blob: false,
-        size: { width: exportWidth },
-      })
-
-      this._cachedUrl = url as string
-      this._cachedBounds = { width: bounds.width, height: bounds.height }
-
-      tempItem.destroy()
-
-      this.updateFill()
-    })
-  }
-
-  public updateFill() {
-    Platform.requestRender(() => {
-      const { tileMode, tileSize, tileGap, tileStagger } = this
-
-      if (!this._cachedUrl || !this._cachedBounds || tileSize <= 0) {
-        this.fill = undefined
-        return
-      }
-      const { width: boundsWidth, height: boundsHeight } = this._cachedBounds
-
-      if (!tileMode) {
-        this.fill = {
-          type: 'image',
-          url: this._cachedUrl,
-          mode: 'stretch',
-        }
-      }
-      else {
-        const scale = tileSize / 100
-        const sizeWidth = boundsWidth * scale
-        const sizeHeight = boundsHeight * scale
-        let xGap: number, yGap: number
-        if (isObject(tileGap)) {
-          xGap = tileGap.x
-          yGap = tileGap.y
-        }
-        else {
-          xGap = yGap = tileGap
-        }
-
-        const gapX = (xGap / 100) * sizeWidth
-        const gapY = (yGap / 100) * sizeHeight
-
-        this.fill = {
-          type: 'image',
-          url: this._cachedUrl,
-          mode: 'repeat',
-          gap: { x: gapX, y: gapY },
-          size: { width: sizeWidth, height: sizeHeight },
-          stagger: tileStagger,
-          rotation: this.tileRotation,
-          align: 'center',
-        }
-      }
-    })
   }
 }
 
