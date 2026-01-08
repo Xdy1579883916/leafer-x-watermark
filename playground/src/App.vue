@@ -7,8 +7,7 @@ import '@leafer-in/viewport'
 import {App, Debug, Group} from "leafer-ui";
 import "@lx/watermark"
 import './util/proxyData'
-
-import { Watermark } from  "@lx/watermark"
+import {installStaggerPattern, Watermark} from "@lx/watermark"
 
 let leaferApp: App
 Debug.filter = ['leafer-x-watermark']
@@ -30,6 +29,7 @@ async function initLeafer() {
       }
     },
   })
+  installStaggerPattern()
   const watermark = {
     tileContent: JSON.stringify({
       "tag": "Group",

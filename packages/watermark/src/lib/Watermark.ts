@@ -19,9 +19,6 @@ import {
   registerUI,
   UICreator,
 } from '@leafer-ui/core'
-import { installStaggerPattern } from '../stagger'
-
-installStaggerPattern()
 
 const debug = Debug.get('leafer-x-watermark')
 
