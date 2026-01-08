@@ -270,7 +270,6 @@ export class Watermark<TConstructorData = IWatermarkInputData> extends Rect<TCon
 
   constructor(data?: TConstructorData) {
     super(data)
-    console.log(this.tileURL)
   }
 }
 
