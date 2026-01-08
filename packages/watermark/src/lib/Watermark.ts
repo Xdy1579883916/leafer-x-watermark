@@ -1,3 +1,4 @@
+import type { Canvas } from '@leafer-ui/core'
 import type {
   IImageInputData,
   IJSONOptions,
@@ -20,7 +21,7 @@ import {
   UICreator,
 } from '@leafer-ui/core'
 
-const debug = Debug.get('leafer-x-watermark')
+const console = Debug.get('leafer-x-watermark')
 
 // ==================== Types ====================
 interface ITileGap {
@@ -48,7 +49,7 @@ export interface IProcessDataType extends IRectData {
   _cachedBounds?: { width: number, height: number }
 
   updateFill: () => void
-  regenerateImage: () => Promise<void>
+  regenerateImage: () => void
 }
 
 export interface IWatermark extends IWatermarkAttrData, IUI {
@@ -171,7 +172,7 @@ export class ProcessorData extends RectData implements IProcessDataType {
     }) as IUI
   }
 
-  public async regenerateImage() {
+  public regenerateImage() {
     const leaf = this.__leaf
     const { _tileContent } = this
     const { width, height } = leaf
@@ -188,28 +189,41 @@ export class ProcessorData extends RectData implements IProcessDataType {
       itemData = JSON.parse(_tileContent)
     }
     catch (e) {
-      debug.error('Invalid tileContent JSON:', e)
+      console.error('Invalid tileContent JSON:', e)
       return
     }
 
     const tempItem = this.createTileItem(itemData)
-    const bounds = tempItem.getBounds('box', 'local')
+    const { url, bounds } = this._simpleExport(tempItem)
 
     if (!width || !height) {
       leaf.width = bounds.width
       leaf.height = bounds.height
     }
-
-    const exportWidth = 1000
-
-    const { data: url } = await tempItem.export('png', {
-      blob: false,
-      size: { width: exportWidth },
-    })
-    this._cachedUrl = url as string
-    this._cachedBounds = { width: bounds.width, height: bounds.height }
+    this._cachedUrl = url
+    this._cachedBounds = bounds
     tempItem.destroy()
     this.updateFill()
+  }
+
+  public _simpleExport(ui: IUI) {
+    const exportWidth = 1000
+    const bounds = ui.getBounds('render', 'local')
+
+    const scaleRatio = exportWidth / bounds.width
+    const scaledWidth = Math.floor(bounds.width * scaleRatio)
+    const scaledHeight = Math.floor(bounds.height * scaleRatio)
+
+    const canvas = UICreator.get('Canvas', {
+      x: 0,
+      y: 0,
+      width: scaledWidth,
+      height: scaledHeight,
+    }) as Canvas
+    canvas.draw(ui, undefined, scaleRatio)
+    const url = canvas.canvas.toDataURL('image/png') as string
+    canvas.destroy()
+    return { url, bounds }
   }
 }
 
@@ -256,6 +270,7 @@ export class Watermark<TConstructorData = IWatermarkInputData> extends Rect<TCon
 
   constructor(data?: TConstructorData) {
     super(data)
+    console.log(this.tileURL)
   }
 }
 
