@@ -1,7 +1,7 @@
 {
   "name": "leafer-x-watermark",
   "type": "module",
-  "version": "1.2.0",
+  "version": "1.3.0",
   "packageManager": "pnpm@10.14.0",
   "description": "Leafer 水印插件",
   "author": "XiaDeYu <1579883916@qq.com>",
