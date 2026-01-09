@@ -292,7 +292,7 @@ const tileStaggerOffset = computed({
 
 <template>
   <NFlex justify="start">
-    <div id="leafer-app" style="background: rgb(242 235 255);"></div>
+    <div id="leafer-app" style="background: rgb(242 235 255);width: 1200px;height: 600px;"></div>
     <NFlex vertical>
       <h3>window.app 可获取leafer 实例, 自行操作</h3>
       <NFlex justify="start">
