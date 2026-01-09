@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import {computed, onMounted, ref} from 'vue'
+import {computed, nextTick, onMounted, ref} from 'vue'
 import '@leafer-in/editor'
 import '@leafer-in/export'
 import '@leafer-in/view'
@@ -7,13 +7,15 @@ import '@leafer-in/viewport'
 import {App, Debug, Group} from "leafer-ui";
 import "@lx/watermark"
 import './util/proxyData'
-import {installStaggerPattern, Watermark} from "@lx/watermark"
+import {installStaggerPattern, WatermarkURL, WatermarkURL as Watermark, WatermarkSync, WatermarkAsync} from "@lx/watermark"
 
 let leaferApp: App
 Debug.filter = ['leafer-x-watermark']
 Debug.enable = true
 // console.log(UICreator.list);
 let target: Watermark = null
+const uis: any = []
+const targetIndex = ref(0)
 const inited = ref(false)
 
 async function initLeafer() {
@@ -30,6 +32,7 @@ async function initLeafer() {
     },
   })
   installStaggerPattern()
+  const size = 400
   const watermark = {
     tileContent: JSON.stringify({
       "tag": "Group",
@@ -149,24 +152,7 @@ async function initLeafer() {
           "skewY": 0,
           "editable": true,
           "data": {}
-        }
-      ]
-    }),
-    width: 1200,
-    height: 600,
-    tileMode: true,
-    tileRotation: 0,
-    tileSize: 100,
-    tileStagger: 0,
-    tileGap: 0,
-    editable: true,
-  }
-  const watermark1 = {
-    tileContent: JSON.stringify({
-      "tag": "Group",
-      "editable": true,
-      "hitChildren": false,
-      "children": [
+        },
         {
           "tag": "Text",
           "width": 160.60629822826596,
@@ -174,10 +160,10 @@ async function initLeafer() {
           "fill": [
             {
               "type": "solid",
-              "color": "#000"
+              "color": "#f40"
             }
           ],
-          "text": "盗图必究",
+          "text": "WatermarkSync",
           "fontSize": 14.529701201285203,
           "lineHeight": {
             "type": "percent",
@@ -187,7 +173,7 @@ async function initLeafer() {
           "verticalAlign": "middle",
           "id": "uy0LKuKDtLEKpKsUumF49GgV1hYTVml1",
           "x": 37.726083098217096,
-          "y": 178.49939527642232,
+          "y": 158.49939527642232,
           "rotation": 0,
           "skewX": 0,
           "skewY": 0,
@@ -196,19 +182,53 @@ async function initLeafer() {
         }
       ]
     }),
-    width: 1200,
-    height: 600,
+    width: size,
+    height: size,
     tileMode: true,
     tileRotation: 0,
-    tileSize: 100,
+    tileSize: 30,
     tileStagger: 0,
     tileGap: 0,
     editable: true,
   }
-  target = new Watermark(watermark)
-  inited.value = true
-  leaferApp.tree.add(target)
+  const w1 = new WatermarkSync(watermark)
+  leaferApp.tree.add(w1)
+  const watermark2 = {
+    "tag": "Watermark",
+    "tileContent": JSON.stringify({"tag":"Group","id":"bMObjJRg2Cev1OZA0lqE1q7zA25Z26RI","x":34.3495451070321,"y":13.654484559229843,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"lockRatio":true,"editable":true,"hitChildren":false,"data":{},"children":[{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uUENq5uNerFNAJmdhCu14bJAVRw38gZW","x":0,"y":0,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uI91P8PDhuYSAyETBq7jFv25rfpETi9s","x":0,"y":281.1208998246031,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"u9UA0VL03iB8pDdfNOH1pqrhiMvIfnqF","x":284.7250139249188,"y":281.1208998246031,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uEDCx6UAhUTp0ktpQjEPXzPoFKhlY62f","x":284.7250139249188,"y":0,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Text","width":314,"height":48,"fill":[{"type":"solid","color":"rgba(255, 0, 0, 1)"}],"text":"WatermarkAsync","fontSize":32,"fontWeight":"bold","lineHeight":{"type":"percent","value":1.5},"textAlign":"center","verticalAlign":"middle","id":"uAwzADSqZWLkkrRzKkdYnAOOK6sOAM8b","x":127.72501392491881,"y":237.0814885166904,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}}]}),
+    "tileMode": true,
+    width: size,
+    height: size,
+    x: size,
+    "tileSize": 30,
+    "editable": true
+  }
+  const w2 = new WatermarkAsync(watermark2)
+  leaferApp.tree.add(w2)
+  const watermark3 = {
+    tileURL: "https://cn.vuejs.org/logo.svg",
+    width: size,
+    height: size,
+    x: size * 2,
+    tileMode: true,
+    tileRotation: 0,
+    tileSize: 30,
+    tileStagger: 0,
+    tileGap: 0,
+    editable: true,
+  }
+  const w3 = new WatermarkURL(watermark3)
+  leaferApp.tree.add(w3)
+  uis.push(w1, w2, w3)
+  setActive()
   ;(window as any).app = leaferApp
+}
+
+function setActive() {
+  nextTick(() => {
+    target = uis[targetIndex.value] as Watermark
+    inited.value = true
+  })
 }
 
 onMounted(() => {
@@ -244,6 +264,7 @@ function handleDebug() {
 
 const tileStaggerType = computed({
   get() {
+    target = uis[targetIndex.value] as Watermark
     const stagger = target.proxyData.tileStagger
     return stagger?.type || 'x'
   },
@@ -256,6 +277,7 @@ const tileStaggerType = computed({
 })
 const tileStaggerOffset = computed({
   get() {
+    target = uis[targetIndex.value] as Watermark
     const offset = typeof target.tileStagger === 'number' ? target.tileStagger : target.tileStagger?.offset
     return offset || 0
   },
@@ -279,25 +301,37 @@ const tileStaggerOffset = computed({
         <NButton @click="handleExport2">导出元素</NButton>
         <NButton @click="handleExport3">导出JSON（见console）</NButton>
       </NFlex>
-      <NForm justify="start" v-if="inited">
-        <NFormItem label="旋转">
-          <n-slider v-model:value="target.proxyData.tileRotation" :step="1" :max="360" />
+      <NForm justify="start" v-if="inited" :key="targetIndex">
+        <NFormItem label="操作元素">
+          <NRadioGroup v-model:value="targetIndex" @updateValue="setActive()">
+            <NRadio v-for="(_,index) in uis" :key="index" :value="index">
+              w{{ index +1 }}
+            </NRadio>
+          </NRadioGroup>
         </NFormItem>
-        <NFormItem label="交错方向">
-          <n-radio-group v-model:value="tileStaggerType">
-            <n-radio value="x">横向</n-radio>
-            <n-radio value="y">纵向</n-radio>
-          </n-radio-group>
+        <NFormItem label="平铺">
+          <NSwitch v-model:value="target.proxyData.tileMode"></NSwitch>
         </NFormItem>
-        <NFormItem label="交错">
-          <n-slider v-model:value="tileStaggerOffset" :step="1" :max="100" />
-        </NFormItem>
-        <NFormItem label="大小">
-          <n-slider v-model:value="target.proxyData.tileSize" :step="1" :max="100" />
-        </NFormItem>
-        <NFormItem label="间距">
-          <n-slider v-model:value="target.proxyData.tileGap" :step="1" :max="100" />
-        </NFormItem>
+        <template v-if="target.proxyData.tileMode">
+          <NFormItem label="旋转">
+            <n-slider v-model:value="target.proxyData.tileRotation" :step="1" :max="180" :min="-180" />
+          </NFormItem>
+          <NFormItem label="交错方向">
+            <n-radio-group v-model:value="tileStaggerType">
+              <n-radio value="x">横向</n-radio>
+              <n-radio value="y">纵向</n-radio>
+            </n-radio-group>
+          </NFormItem>
+          <NFormItem label="交错">
+            <n-slider v-model:value="tileStaggerOffset" :step="1" :max="100" />
+          </NFormItem>
+          <NFormItem label="大小">
+            <n-slider v-model:value="target.proxyData.tileSize" :step="1" :max="100" />
+          </NFormItem>
+          <NFormItem label="间距">
+            <n-slider v-model:value="target.proxyData.tileGap" :step="1" :max="100" />
+          </NFormItem>
+        </template>
       </NForm>
     </NFlex>
   </NFlex>

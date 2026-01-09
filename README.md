@@ -7,6 +7,8 @@
 
 Leafer UI 水印插件，支持任意 LeaferJS 元素平铺水印
 
+> ⚠️ **重要提示**：如果需要使用 `tileStagger`（错位排列）功能，必须在 `new App()` 后立即调用 `installStaggerPattern()` 进行补丁安装（此为临时方案，待官方支持后将移除）。
+
 ## ✨ 特性
 
 - 🎨 **任意图形** - 支持任意 LeaferJS 元素作为水印内容
@@ -16,6 +18,7 @@ Leafer UI 水印插件，支持任意 LeaferJS 元素平铺水印
 - 🎯 **错位排列** - 支持水印错位（stagger）效果
 - 🔃 **旋转支持** - 支持水印旋转角度设置
 - ⚡ **性能优化** - 智能缓存，仅在必要时重新生成图片
+- 🚀 **多版本支持** - 提供同步、异步及 URL 三种版本，适配不同场景需求
 
 ## 📦 安装
 
@@ -32,15 +35,30 @@ yarn add leafer-x-watermark
 
 ## 🚀 快速开始
 
-### 基础使用
+### 版本选择
+
+根据水印内容选择合适的版本：
+
+- **WatermarkSync（同步版本）** - 适用于纯文本、矩形等基础图形，性能更好
+- **WatermarkAsync（异步版本）** - 适用于包含图片URL、自定义字体等需要加载的异步资源
+- **WatermarkURL（URL版本）** - 直接通过图片URL创建水印，更加便捷
+
+```typescript
+import { WatermarkSync } from 'leafer-x-watermark'    // 同步版本
+import { WatermarkAsync } from 'leafer-x-watermark'   // 异步版本
+import { WatermarkURL } from 'leafer-x-watermark'     // URL版本
+```
+
+### 基础使用（同步版本）
 
 ```typescript
 import { App } from 'leafer-ui'
-import { Watermark } from 'leafer-x-watermark'
+import { WatermarkSync, installStaggerPattern } from 'leafer-x-watermark'
 
 const app = new App({ view: 'app' })
+installStaggerPattern() // 全局安装一次即可
 
-const watermark = new Watermark({
+const watermark = new WatermarkSync({
   tileContent: JSON.stringify({
     tag: 'Text',
     text: '水印文字',
@@ -54,71 +72,69 @@ const watermark = new Watermark({
 app.tree.add(watermark)
 ```
 
-### 平铺模式
+### URL版本使用
+
+可以直接使用图片 URL 作为水印内容：
 
 ```typescript
-const watermark = new Watermark({
-  tileContent: JSON.stringify({
-    tag: 'Text',
-    text: 'CONFIDENTIAL',
-    fill: 'rgba(255, 0, 0, 0.1)',
-    fontSize: 20,
-  }),
-  tileMode: true, // 开启平铺
-  tileSize: 100, // 100% 原始大小
-  tileGap: 20, // 20% 间距
-  tileRotation: -30, // 旋转 -30 度
+import { App } from 'leafer-ui'
+import { WatermarkURL, installStaggerPattern } from 'leafer-x-watermark'
+
+const app = new App({ view: 'app' })
+installStaggerPattern()
+
+const watermark = new WatermarkURL({
+  tileURL: 'https://example.com/logo.png',
+  tileMode: true,
+  tileSize: 50,
   width: 800,
   height: 600,
 })
+
+app.tree.add(watermark)
 ```
 
-### 错位排列
+### 异步版本使用
+
+当水印内容包含图片资源时，使用异步版本：
 
 ```typescript
-const watermark = new Watermark({
+import { App } from 'leafer-ui'
+import { WatermarkAsync, installStaggerPattern } from 'leafer-x-watermark'
+
+const app = new App({ view: 'app' })
+installStaggerPattern()
+
+const watermark = new WatermarkAsync({
   tileContent: JSON.stringify({
-    tag: 'Text',
-    text: '机密文件',
-    fill: 'rgba(0, 0, 0, 0.1)',
-    fontSize: 14,
+    tag: 'Image',
+    url: 'https://example.com/logo.png',
+    width: 100,
+    height: 100,
   }),
   tileMode: true,
-  tileStagger: 50, // 50% 错位偏移
-  tileGap: 10,
   width: 800,
   height: 600,
 })
-```
 
-### 图形水印
-
-```typescript
-const watermark = new Watermark({
-  tileContent: JSON.stringify({
-    tag: 'Group',
-    children: [
-      { tag: 'Ellipse', width: 20, height: 20, fill: 'rgba(0, 100, 255, 0.2)' },
-      { tag: 'Text', text: 'LOGO', x: 25, y: 3, fill: 'rgba(0, 100, 255, 0.2)', fontSize: 12 },
-    ],
-  }),
-  tileMode: true,
-  tileSize: 80,
-  tileGap: 30,
-  width: 800,
-  height: 600,
-})
+app.tree.add(watermark)
 ```
 
 ## 📖 API 文档
 
-### Watermark 属性
+### WatermarkSync / WatermarkAsync / WatermarkURL
+
+三个版本的 API 基本相同，主要区别：
+- **WatermarkSync**: 同步生成，适用于纯图形。
+- **WatermarkAsync**: 异步生成，适用于包含外部资源的图形。
+- **WatermarkURL**: 直接使用 `tileURL` 属性设置图片 URL。
 
 继承自 Leafer UI 的 [Rect](https://www.leaferjs.com/ui/display/Rect.html) 组件，拥有所有 Rect 属性，并额外支持：
 
 | 属性 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
-| `tileContent` | string | - | 水印内容，LeaferJS 元素的 JSON 字符串 |
+| `tileContent` | string | - | 水印内容，LeaferJS 元素的 JSON 字符串（URL版本不支持） |
+| `tileURL` | string | - | 直接设置图片 URL 作为水印（仅限 URL版本） |
 | `tileMode` | boolean | `true` | 平铺模式：`true` 平铺，`false` 拉伸 |
 | `tileSize` | number | `100` | 显示比例（%），100 为原始大小 |
 | `tileGap` | `number \| { x?: number, y?: number }` | `0` | 间距比例（%），支持统一数值或分别设置 x/y 间距 |
@@ -127,25 +143,16 @@ const watermark = new Watermark({
 
 ### 属性说明
 
-#### tileContent
+#### tileContent / tileURL
 
-水印内容为 LeaferJS 元素的 JSON 字符串，支持所有 LeaferJS 图形类型：
+水印内容支持 LeaferJS 元素的 JSON 字符串（Sync/Async版本）或直接图片 URL（URL版本）：
 
 ```typescript
-// 文本
+// Sync / Async 版本使用 tileContent
 JSON.stringify({ tag: 'Text', text: '水印', fill: '#000', fontSize: 16 })
 
-// 图片
-JSON.stringify({ tag: 'Image', url: 'logo.png', width: 50, height: 50 })
-
-// 组合图形
-JSON.stringify({
-  tag: 'Group',
-  children: [
-    { tag: 'Rect', width: 30, height: 30, fill: '#f00' },
-    { tag: 'Text', text: 'A', x: 10, y: 5, fill: '#fff' },
-  ],
-})
+// URL 版本使用 tileURL
+const tileURL = 'https://example.com/logo.png'
 ```
 
 #### tileSize
@@ -169,6 +176,8 @@ JSON.stringify({
 - `{ type: 'y', offset: 50 }` = 垂直方向（y）相邻列偏移 50%
 - `0` = 无错位
 - `100` = 完全错位（等于一个完整水印尺寸）
+
+⚠️ **注意**：使用 `tileStagger` 功能前必须先调用 `installStaggerPattern()`
 
 ## 💡 使用场景
 
