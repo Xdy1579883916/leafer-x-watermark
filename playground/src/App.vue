@@ -4,7 +4,7 @@ import '@leafer-in/editor'
 import '@leafer-in/export'
 import '@leafer-in/view'
 import '@leafer-in/viewport'
-import {App, Debug, Group} from "leafer-ui";
+import {App, Debug, Frame, Group} from "leafer-ui";
 import "@lx/watermark"
 import './util/proxyData'
 import {installStaggerPattern, WatermarkURL, WatermarkURL as Watermark, WatermarkSync, WatermarkAsync} from "@lx/watermark"
@@ -30,6 +30,15 @@ async function initLeafer() {
         editConfig: {editSize: 'font-size'},
       }
     },
+  })
+  const frame = new Frame({
+    width: 500,
+    height: 500,
+    x: 0,
+    y: 0,
+    fill: "#f40",
+    editable: true,
+    hitChildren: false,
   })
   installStaggerPattern()
   const size = 400
@@ -192,8 +201,10 @@ async function initLeafer() {
     editable: true,
   }
   const w1 = new WatermarkSync(watermark)
-  leaferApp.tree.add(w1)
-  const watermark2 = {
+  uis.push(w1)
+  frame.add(w1)
+  leaferApp.tree.add(frame)
+  /*const watermark2 = {
     "tag": "Watermark",
     "tileContent": JSON.stringify({"tag":"Group","id":"bMObjJRg2Cev1OZA0lqE1q7zA25Z26RI","x":34.3495451070321,"y":13.654484559229843,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"lockRatio":true,"editable":true,"hitChildren":false,"data":{},"children":[{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uUENq5uNerFNAJmdhCu14bJAVRw38gZW","x":0,"y":0,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uI91P8PDhuYSAyETBq7jFv25rfpETi9s","x":0,"y":281.1208998246031,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"u9UA0VL03iB8pDdfNOH1pqrhiMvIfnqF","x":284.7250139249188,"y":281.1208998246031,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uEDCx6UAhUTp0ktpQjEPXzPoFKhlY62f","x":284.7250139249188,"y":0,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Text","width":314,"height":48,"fill":[{"type":"solid","color":"rgba(255, 0, 0, 1)"}],"text":"WatermarkAsync","fontSize":32,"fontWeight":"bold","lineHeight":{"type":"percent","value":1.5},"textAlign":"center","verticalAlign":"middle","id":"uAwzADSqZWLkkrRzKkdYnAOOK6sOAM8b","x":127.72501392491881,"y":237.0814885166904,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}}]}),
     "tileMode": true,
@@ -204,6 +215,7 @@ async function initLeafer() {
     "editable": true
   }
   const w2 = new WatermarkAsync(watermark2)
+  uis.push(w2)
   leaferApp.tree.add(w2)
   const watermark3 = {
     tileURL: "https://cn.vuejs.org/logo.svg",
@@ -218,8 +230,8 @@ async function initLeafer() {
     editable: true,
   }
   const w3 = new WatermarkURL(watermark3)
-  leaferApp.tree.add(w3)
-  uis.push(w1, w2, w3)
+  uis.push(w2)
+  leaferApp.tree.add(w3)*/
   setActive()
   ;(window as any).app = leaferApp
 }
@@ -326,7 +338,7 @@ const tileStaggerOffset = computed({
             <n-slider v-model:value="tileStaggerOffset" :step="1" :max="100" />
           </NFormItem>
           <NFormItem label="大小">
-            <n-slider v-model:value="target.proxyData.tileSize" :step="1" :max="100" />
+            <n-slider v-model:value="target.proxyData.tileSize" :step="1" :max="200" />
           </NFormItem>
           <NFormItem label="间距">
             <n-slider v-model:value="target.proxyData.tileGap" :step="1" :max="100" />

@@ -72,6 +72,10 @@ export class WatermarkSync<TConstructorData = IWatermarkInputData> extends Water
 
   @boundsType(0)
   declare tileRotation: number
+
+  public get tileURL() {
+    return this.__._cachedUrl
+  }
 }
 
 Plugin.add('leafer-x-watermark')

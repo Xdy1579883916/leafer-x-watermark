@@ -62,4 +62,8 @@ export class WatermarkAsync<TConstructorData = IWatermarkInputData> extends Wate
 
   @boundsType(0)
   declare tileRotation: number
+
+  public get tileURL() {
+    return this.__._cachedUrl
+  }
 }

@@ -39,6 +39,8 @@ export abstract class ProcessorDataBase extends RectData implements IProcessData
   setTileMode(value: boolean) {
     this._tileMode = value
     this.updateFill()
+    if (value && this.__leaf.syncParentSize)
+      this.__leaf.syncParentSize()
   }
 
   setTileSize(value: number) {

@@ -1,7 +1,8 @@
 import type { IStagger } from '../types/stagger'
-import type { ITileGap, IWatermark, IWatermarkInputData } from './base/types'
-import { boundsType, Creator, dataProcessor, Rect, registerUI } from '@leafer-ui/core'
+import type { ITileGap, IWatermarkInputData } from './base/types'
+import { boundsType, Creator, dataProcessor, registerUI } from '@leafer-ui/core'
 import { ProcessorDataBase } from './base/ProcessorDataBase'
+import { WatermarkBase } from './base/WatermarkBase'
 
 async function toBase64(url: string): Promise<{ data: string, bounds: { width: number, height: number } }> {
   return new Promise((resolve) => {
@@ -41,7 +42,7 @@ export class ProcessorData extends ProcessorDataBase {
 
 // ==================== Main Class (URL) ====================
 @registerUI()
-export class WatermarkURL<TConstructorData = IWatermarkInputData> extends Rect<TConstructorData> implements IWatermark {
+export class WatermarkURL<TConstructorData = IWatermarkInputData> extends WatermarkBase<TConstructorData> {
   get __tag() {
     return 'WatermarkURL'
   }
