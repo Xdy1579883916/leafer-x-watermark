@@ -129,7 +129,7 @@ app.tree.add(watermark)
 - **WatermarkAsync**: 异步生成，适用于包含外部资源的图形。
 - **WatermarkURL**: 直接使用 `tileURL` 属性设置图片 URL。
 
-继承自 Leafer UI 的 [Rect](https://www.leaferjs.com/ui/display/Rect.html) 组件，拥有所有 Rect 属性，并额外支持：
+继承自 Leafer UI 的 [Rect](https://www.leaferjs.com/ui/reference/display/Rect.html) 组件，拥有所有 Rect 属性，并额外支持：
 
 | 属性 | 类型 | 默认值 | 说明 |
 |------|------|--------|------|
