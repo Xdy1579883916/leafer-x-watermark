@@ -7,6 +7,8 @@ import type {
 import type { IStagger } from '../../types/stagger'
 
 // ==================== Types ====================
+export type ITileContentParser = (content: string) => object | null
+
 export interface ITileGap {
   x?: number
   y?: number
@@ -39,6 +41,7 @@ export interface IProcessDataType extends IRectData {
 
 export interface IWatermark extends IWatermarkAttrData, IUI {
   __: IProcessDataType
+  tileContentParser?: ITileContentParser
 }
 
 export interface IWatermarkInputData extends IWatermarkAttrData, IRectInputData {

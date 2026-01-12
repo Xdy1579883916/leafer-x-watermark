@@ -10,6 +10,16 @@ import { Debug, isObject, RectData, UICreator } from '@leafer-ui/core'
 
 const console = Debug.get('leafer-x-watermark')
 
+export function defaultTileContentParser(content: string): object | null {
+  try {
+    return JSON.parse(content)
+  }
+  catch (e) {
+    console.error('Invalid tileContent JSON:', e)
+    return null
+  }
+}
+
 export abstract class ProcessorDataBase extends RectData implements IProcessDataType {
   declare public __leaf: any
 
@@ -138,13 +148,8 @@ export abstract class ProcessorDataBase extends RectData implements IProcessData
       return null
     }
 
-    try {
-      return JSON.parse(_tileContent)
-    }
-    catch (e) {
-      console.error('Invalid tileContent JSON:', e)
-      return null
-    }
+    const parser = this.__leaf.tileContentParser || defaultTileContentParser
+    return parser(_tileContent)
   }
 
   protected updateLeafDimensions(bounds: { width: number, height: number }) {

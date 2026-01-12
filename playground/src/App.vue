@@ -9,6 +9,23 @@ import "@lx/watermark"
 import './util/proxyData'
 import {installStaggerPattern, WatermarkURL, WatermarkURL as Watermark, WatermarkSync, WatermarkAsync} from "@lx/watermark"
 
+const list = [
+  WatermarkURL,
+  WatermarkSync,
+  WatermarkAsync,
+]
+
+list.forEach(item => {
+  item.prototype.tileContentParser = function (content) {
+    try {
+      return JSON.parse(content)
+    }
+    catch (e) {
+      return null
+    }
+  }
+})
+
 let leaferApp: App
 Debug.filter = ['leafer-x-watermark']
 Debug.enable = true

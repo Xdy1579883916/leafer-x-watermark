@@ -1,10 +1,12 @@
 import type { ProcessorDataBase } from './ProcessorDataBase'
-import type { IWatermark, IWatermarkInputData } from './types'
+import type { ITileContentParser, IWatermark, IWatermarkInputData } from './types'
 import { PropertyEvent, Rect } from '@leafer-ui/core'
 
 export abstract class WatermarkBase<TConstructorData = IWatermarkInputData>
   extends Rect<TConstructorData> implements IWatermark {
   declare public __: ProcessorDataBase
+
+  public tileContentParser?: ITileContentParser
 
   constructor(data?: TConstructorData) {
     super(data)
