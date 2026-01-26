@@ -4,8 +4,8 @@ import type {
   IObject,
 } from '@leafer-ui/interface'
 
+import type { INormalizedStagger, IStagger } from '../../types/stagger.ts'
 import type { IProcessDataType, ITileGap } from './types'
-import type { INormalizedStagger, IStagger } from '@/leafer/ui/watermark/types/stagger.ts'
 import { isObject, RectData } from '@leafer-ui/core'
 
 /** 标准化 stagger 参数 */

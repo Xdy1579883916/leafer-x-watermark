@@ -13,6 +13,10 @@
       ]
     }
   },
+  "peerDependencies": {
+    "@leafer-ui/core": "^2.0.0",
+    "@leafer-ui/interface": "^2.0.0"
+  },
   "devDependencies": {
     "@leafer-ui/core": "^2.0.0",
     "@leafer-ui/interface": "^2.0.0"
