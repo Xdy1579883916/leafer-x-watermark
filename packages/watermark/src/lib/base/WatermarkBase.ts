@@ -18,13 +18,19 @@ export abstract class WatermarkBase<TConstructorData = IWatermarkInputData>
   }
 
   public syncParentSize(e?: PropertyEvent) {
-    if (e && !['width', 'height'].includes(e.attrName)) {
+    if (e && !['width', 'height', 'x', 'y'].includes(e.attrName)) {
       return
     }
     if (this.__._tileMode && this.parent) {
       this.width = this.parent.width
       this.height = this.parent.height
-      this.y = this.x = 0
+      this.y = this.x = this.rotation = 0
+      this.scaleX = this.scaleY = 1
+    }
+    else {
+      // 关闭平铺时恢复默认尺寸
+      this.width = this.__._cachedBounds?.width
+      this.height = this.__._cachedBounds?.height
     }
   }
 

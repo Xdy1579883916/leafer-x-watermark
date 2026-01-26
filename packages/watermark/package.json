@@ -14,7 +14,7 @@
     }
   },
   "devDependencies": {
-    "@leafer-ui/core": "^1.11.2",
-    "@leafer-ui/interface": "^1.11.2"
+    "@leafer-ui/core": "^2.0.0",
+    "@leafer-ui/interface": "^2.0.0"
   }
 }

@@ -12,15 +12,15 @@
     "vue": "^3.5.24"
   },
   "devDependencies": {
-    "@leafer-in/editor": "^1.11.2",
-    "@leafer-in/export": "^1.11.2",
-    "@leafer-in/view": "^1.11.2",
-    "@leafer-in/viewport": "^1.11.2",
+    "@leafer-in/editor": "^2.0.0",
+    "@leafer-in/export": "^2.0.0",
+    "@leafer-in/view": "^2.0.0",
+    "@leafer-in/viewport": "^2.0.0",
     "@lx/watermark": "workspace:*",
     "@tsconfig/node22": "^22.0.2",
     "@types/node": "^24.3.1",
     "@vitejs/plugin-vue": "^6.0.1",
-    "leafer-ui": "^1.11.2",
+    "leafer-ui": "^2.0.0",
     "naive-ui": "^2.43.1"
   }
 }

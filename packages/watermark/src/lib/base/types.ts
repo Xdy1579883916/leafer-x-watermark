@@ -25,7 +25,6 @@ export interface IWatermarkAttrData {
 }
 
 export interface IProcessDataType extends IRectData {
-  _tileContent?: string
   _tileURL?: string
   _tileMode?: boolean
   _tileSize?: number

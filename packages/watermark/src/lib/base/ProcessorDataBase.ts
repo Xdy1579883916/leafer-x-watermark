@@ -2,22 +2,18 @@ import type {
   IImageInputData,
   IJSONOptions,
   IObject,
-  IUI,
 } from '@leafer-ui/interface'
 
 import type { IProcessDataType, ITileGap } from './types'
-import { Debug, isObject, RectData, UICreator } from '@leafer-ui/core'
+import type { INormalizedStagger, IStagger } from '@/leafer/ui/watermark/types/stagger.ts'
+import { isObject, RectData } from '@leafer-ui/core'
 
-const console = Debug.get('leafer-x-watermark')
-
-export function defaultTileContentParser(content: string): object | null {
-  try {
-    return JSON.parse(content)
+/** 标准化 stagger 参数 */
+function normalizeStagger(stagger: IStagger): INormalizedStagger {
+  if (typeof stagger === 'number') {
+    return { type: 'x', offset: stagger }
   }
-  catch (e) {
-    console.error('Invalid tileContent JSON:', e)
-    return null
-  }
+  return { type: stagger.type || 'x', offset: stagger.offset || 0 }
 }
 
 export abstract class ProcessorDataBase extends RectData implements IProcessDataType {
@@ -26,20 +22,14 @@ export abstract class ProcessorDataBase extends RectData implements IProcessData
   _cachedUrl?: string
   _cachedBounds?: { width: number, height: number }
 
-  _tileContent?: string = ''
   _tileURL?: string = ''
   _tileMode?: boolean = true
   _tileSize?: number = 100
   _tileGap?: number | ITileGap = 0
-  _tileStagger?: number = 0
+  _tileStagger?: IStagger = 0
   _tileRotation?: number = 0
 
   abstract regenerateImage(): void | Promise<void>
-
-  setTileContent(value: string) {
-    this._tileContent = value
-    this.regenerateImage()
-  }
 
   setTileURL(value: string) {
     this._tileURL = value
@@ -49,7 +39,7 @@ export abstract class ProcessorDataBase extends RectData implements IProcessData
   setTileMode(value: boolean) {
     this._tileMode = value
     this.updateFill()
-    if (value && this.__leaf.syncParentSize)
+    if (this.__leaf.syncParentSize)
       this.__leaf.syncParentSize()
   }
 
@@ -106,13 +96,22 @@ export abstract class ProcessorDataBase extends RectData implements IProcessData
       const gapX = (xGap / 100) * sizeWidth
       const gapY = (yGap / 100) * sizeHeight
 
+      const interlace = normalizeStagger(_tileStagger)
+
       leaf.fill = {
         type: 'image',
         url: this._cachedUrl,
         mode: 'repeat',
         gap: { x: gapX, y: gapY },
         size: { width: sizeWidth, height: sizeHeight },
-        stagger: _tileStagger,
+        interlace: {
+          type: interlace.type || 'x',
+          offset: {
+            type: 'percent',
+            // 为 0 时有bug，不渲染了，待修复。先手动改为1。
+            value: (interlace.offset || 1) / 100,
+          },
+        },
         rotation: _tileRotation,
         align: 'center',
       }
@@ -131,27 +130,6 @@ export abstract class ProcessorDataBase extends RectData implements IProcessData
     return data
   }
 
-  protected createTileItem(itemData: object): IUI {
-    return UICreator.get('Group', {
-      children: [itemData],
-      around: 'center',
-    }) as IUI
-  }
-
-  protected parseAndValidateTileContent(): object | null {
-    const { _tileContent } = this
-
-    if (!_tileContent) {
-      this._cachedUrl = undefined
-      this._cachedBounds = undefined
-      this.__leaf.fill = undefined
-      return null
-    }
-
-    const parser = this.__leaf.tileContentParser || defaultTileContentParser
-    return parser(_tileContent)
-  }
-
   protected updateLeafDimensions(bounds: { width: number, height: number }) {
     const leaf = this.__leaf
     const { width, height } = leaf
@@ -160,11 +138,5 @@ export abstract class ProcessorDataBase extends RectData implements IProcessData
       leaf.width = bounds.width
       leaf.height = bounds.height
     }
-  }
-
-  protected finalizeCachedData(url: string, bounds: { width: number, height: number }) {
-    this._cachedUrl = url
-    this._cachedBounds = bounds
-    this.updateFill()
   }
 }

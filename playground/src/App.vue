@@ -7,29 +7,11 @@ import '@leafer-in/viewport'
 import {App, Debug, Frame, Group} from "leafer-ui";
 import "@lx/watermark"
 import './util/proxyData'
-import {installStaggerPattern, WatermarkURL, WatermarkURL as Watermark, WatermarkSync, WatermarkAsync} from "@lx/watermark"
-
-const list = [
-  WatermarkURL,
-  WatermarkSync,
-  WatermarkAsync,
-]
-
-list.forEach(item => {
-  item.prototype.tileContentParser = function (content) {
-    try {
-      return JSON.parse(content)
-    }
-    catch (e) {
-      return null
-    }
-  }
-})
+import {WatermarkURL, WatermarkURL as Watermark} from "@lx/watermark"
 
 let leaferApp: App
 Debug.filter = ['leafer-x-watermark']
 Debug.enable = true
-// console.log(UICreator.list);
 let target: Watermark = null
 const uis: any = []
 const targetIndex = ref(0)
@@ -51,189 +33,12 @@ async function initLeafer() {
   const frame = new Frame({
     width: 500,
     height: 500,
-    x: 0,
-    y: 0,
+    x: 50,
+    y: 50,
     fill: "#f40",
-    editable: true,
-    hitChildren: false,
+    editable: false,
   })
-  installStaggerPattern()
   const size = 400
-  const watermark = {
-    tileContent: JSON.stringify({
-      "tag": "Group",
-      "editable": true,
-      "hitChildren": false,
-      "children": [
-        {
-          "tag": "Ellipse",
-          "id": "upxZDV6yFea4sqv6zyvEuJQAIsI5MSJp",
-          "x": 4.831637088269847e-14,
-          "y": 0,
-          "width": 236.05846442470025,
-          "height": 236.05846442470025,
-          "scaleX": 1,
-          "scaleY": 1,
-          "rotation": 0,
-          "skewX": 0,
-          "skewY": 0,
-          "editable": true,
-          "fill": [
-            {
-              "type": "solid",
-              "color": "rgba(255, 255, 255, 0)"
-            }
-          ],
-          "stroke": [
-            {
-              "type": "solid",
-              "color": "#000"
-            }
-          ],
-          "strokeWidth": 6,
-          "data": {}
-        },
-        {
-          "tag": "Text",
-          "width": 208.47581660890552,
-          "height": 52.11895415222638,
-          "fill": [
-            {
-              "type": "solid",
-              "color": "#000"
-            }
-          ],
-          "text": "大灰狼の店铺",
-          "fontSize": 30.294142100981514,
-          "fontWeight": "bold",
-          "lineHeight": {
-            "type": "percent",
-            "value": 1.5
-          },
-          "textAlign": "center",
-          "verticalAlign": "middle",
-          "id": "ufxOsol7iyEFpS2tz6nMRK6chdohdtae",
-          "x": 13.490164423620513,
-          "y": 65.91027806012366,
-          "scaleX": 1.0000000000000002,
-          "scaleY": 1.0000000000000002,
-          "rotation": 0,
-          "skewX": 0,
-          "skewY": 0,
-          "editable": true,
-          "data": {}
-        },
-        {
-          "tag": "Text",
-          "width": 211.44234901041355,
-          "height": 30.84348741807116,
-          "fill": [
-            {
-              "type": "solid",
-              "color": "#000"
-            }
-          ],
-          "text": "电话:00000000000",
-          "fontSize": 22.51806781770512,
-          "lineHeight": {
-            "type": "percent",
-            "value": 1.5
-          },
-          "textAlign": "center",
-          "verticalAlign": "middle",
-          "id": "u8po79czIydtfeWsWah5JWtJEmuHi7qm",
-          "x": 12.308057707143153,
-          "y": 129.9043687312298,
-          "scaleX": 1.0000000000000002,
-          "scaleY": 1.0000000000000002,
-          "rotation": 0,
-          "skewX": 0,
-          "skewY": 0,
-          "editable": true,
-          "data": {}
-        },
-        {
-          "tag": "Text",
-          "width": 160.60629822826596,
-          "height": 25.92425999120201,
-          "fill": [
-            {
-              "type": "solid",
-              "color": "#000"
-            }
-          ],
-          "text": "盗图必究",
-          "fontSize": 14.529701201285203,
-          "lineHeight": {
-            "type": "percent",
-            "value": 1.5
-          },
-          "textAlign": "center",
-          "verticalAlign": "middle",
-          "id": "uy0LKuKDtLEKpKsUumF49GgV1hYTVml1",
-          "x": 37.726083098217096,
-          "y": 178.49939527642232,
-          "rotation": 0,
-          "skewX": 0,
-          "skewY": 0,
-          "editable": true,
-          "data": {}
-        },
-        {
-          "tag": "Text",
-          "width": 160.60629822826596,
-          "height": 25.92425999120201,
-          "fill": [
-            {
-              "type": "solid",
-              "color": "#f40"
-            }
-          ],
-          "text": "WatermarkSync",
-          "fontSize": 14.529701201285203,
-          "lineHeight": {
-            "type": "percent",
-            "value": 1.5
-          },
-          "textAlign": "center",
-          "verticalAlign": "middle",
-          "id": "uy0LKuKDtLEKpKsUumF49GgV1hYTVml1",
-          "x": 37.726083098217096,
-          "y": 158.49939527642232,
-          "rotation": 0,
-          "skewX": 0,
-          "skewY": 0,
-          "editable": true,
-          "data": {}
-        }
-      ]
-    }),
-    width: size,
-    height: size,
-    tileMode: true,
-    tileRotation: 0,
-    tileSize: 30,
-    tileStagger: 0,
-    tileGap: 0,
-    editable: true,
-  }
-  const w1 = new WatermarkSync(watermark)
-  uis.push(w1)
-  frame.add(w1)
-  leaferApp.tree.add(frame)
-  /*const watermark2 = {
-    "tag": "Watermark",
-    "tileContent": JSON.stringify({"tag":"Group","id":"bMObjJRg2Cev1OZA0lqE1q7zA25Z26RI","x":34.3495451070321,"y":13.654484559229843,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"lockRatio":true,"editable":true,"hitChildren":false,"data":{},"children":[{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uUENq5uNerFNAJmdhCu14bJAVRw38gZW","x":0,"y":0,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uI91P8PDhuYSAyETBq7jFv25rfpETi9s","x":0,"y":281.1208998246031,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"u9UA0VL03iB8pDdfNOH1pqrhiMvIfnqF","x":284.7250139249188,"y":281.1208998246031,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Image","url":"https://cn.vuejs.org/logo.svg","id":"uEDCx6UAhUTp0ktpQjEPXzPoFKhlY62f","x":284.7250139249188,"y":0,"width":228.83517587263196,"height":237.08148851669043,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}},{"tag":"Text","width":314,"height":48,"fill":[{"type":"solid","color":"rgba(255, 0, 0, 1)"}],"text":"WatermarkAsync","fontSize":32,"fontWeight":"bold","lineHeight":{"type":"percent","value":1.5},"textAlign":"center","verticalAlign":"middle","id":"uAwzADSqZWLkkrRzKkdYnAOOK6sOAM8b","x":127.72501392491881,"y":237.0814885166904,"scaleX":1,"scaleY":1,"rotation":0,"skewX":0,"skewY":0,"editable":true,"data":{}}]}),
-    "tileMode": true,
-    width: size,
-    height: size,
-    x: size,
-    "tileSize": 30,
-    "editable": true
-  }
-  const w2 = new WatermarkAsync(watermark2)
-  uis.push(w2)
-  leaferApp.tree.add(w2)
   const watermark3 = {
     tileURL: "https://cn.vuejs.org/logo.svg",
     width: size,
@@ -247,8 +52,9 @@ async function initLeafer() {
     editable: true,
   }
   const w3 = new WatermarkURL(watermark3)
-  uis.push(w2)
-  leaferApp.tree.add(w3)*/
+  uis.push(w3)
+  frame.add(w3)
+  leaferApp.tree.add(frame)
   setActive()
   ;(window as any).app = leaferApp
 }

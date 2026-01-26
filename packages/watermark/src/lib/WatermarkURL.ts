@@ -4,17 +4,12 @@ import { boundsType, Creator, dataProcessor, registerUI } from '@leafer-ui/core'
 import { ProcessorDataBase } from './base/ProcessorDataBase'
 import { WatermarkBase } from './base/WatermarkBase'
 
-async function toBase64(url: string): Promise<{ data: string, bounds: { width: number, height: number } }> {
+async function getBounds(url: string): Promise<{ data: string, bounds: { width: number, height: number } }> {
   return new Promise((resolve) => {
     const leaferImage = Creator.image({ url })
     leaferImage.load((image) => {
       const { width, height } = image
-      const canvas = Creator.hitCanvas({ width, height, pixelRatio: 1 })
-      canvas.drawImage(image.view, 0, 0)
-      const data = canvas.toDataURL() as string
-      canvas.destroy()
-      leaferImage.destroy()
-      resolve({ data, bounds: { width, height } })
+      resolve({ data: url, bounds: { width, height } })
     })
   })
 }
@@ -31,7 +26,7 @@ export class ProcessorData extends ProcessorDataBase {
       this.__leaf.fill = undefined
       return
     }
-    toBase64(url).then(({ data, bounds }) => {
+    getBounds(url).then(({ data, bounds }) => {
       this._cachedUrl = data
       this._cachedBounds = bounds
       this.updateLeafDimensions(bounds)
